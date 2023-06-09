@@ -1,0 +1,14 @@
+<mvc:View controllerName="zprojectteste2503.controller.HelloPanel"
+    xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+    xmlns="sap.m">
+    <Panel headerText="Header" 
+           class="sapUiResponsiveMargin"
+           width="auto">
+        <content>
+            <Button text="Hello Button"
+                    press="onHelloPress"/>
+            <!-- <core:Fragment FragmentName="zprojectteste2503.view.fragment.HelloDialog"/> -->
+            <Input value="Input Value"/>
+        </content>     
+    </Panel>
+</mvc:View>

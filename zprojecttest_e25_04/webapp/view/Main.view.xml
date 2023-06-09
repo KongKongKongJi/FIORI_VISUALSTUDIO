@@ -1,0 +1,71 @@
+<mvc:View controllerName="zprojectteste2504.controller.Main"
+    xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+    xmlns="sap.m" xmlns:t="sap.ui.table">
+    <Page id="page" title="{MainModel>/title/subTitle}">
+        <content>
+            <Button text="change" press="onChange"/>
+            <Button text="display" press="onDisplay"/>
+            <Text id="idText" text="{MainModel>/title/subTitle}"/>
+
+            <t:Table
+				rows="{MainModel>/list}"
+				selectionMode="MultiToggle"
+				visibleRowCount="7"
+				paste="onPaste"
+				ariaLabelledBy="title">
+				<t:extension>
+					<OverflowToolbar style="Clear">
+						<Title id="title" text="Products"/>
+					</OverflowToolbar>
+				</t:extension>
+				<t:columns>
+					<t:Column>
+						<Label text="Name" />
+						<t:template>
+							<Text text="{MainModel>name}" wrapping="false" />
+						</t:template>
+					</t:Column>
+                    <t:Column>
+						<Label text="Age" />
+						<t:template>
+							<Text text="{MainModel>age}" wrapping="false" />
+						</t:template>
+					</t:Column>
+				</t:columns>
+			</t:Table>
+			<t:Table
+				id="todoTable"
+                rowActionCount="1"
+                rows="{MainModel>/todo}"
+                selectionMode="MultiToggle"
+                visibleRowCount="7"
+                paste="onPaste"
+                ariaLabelledBy="title">
+                <t:extension>
+                    <OverflowToolbar style="Clear">
+                        <Title text="Todo List"/>
+                        <ToolbarSpacer />
+                        <Button text="ADD" icon="sap-icon://add" press="onAdd"/>
+                        <Button text="Delete" icon="sap-icon://delete" press="onDelete"/>
+
+                    </OverflowToolbar>
+                </t:extension>
+                <t:columns>
+                    <t:Column>
+                        <Label text="Content" />
+                        <t:template>
+                            <Text text="{MainModel>content}" wrapping="false" />
+                        </t:template>
+                    </t:Column>
+                </t:columns>
+                <t:rowActionTemplate>
+                    <t:RowAction>
+                        <t:items>
+                            <t:RowActionItem type="Delete" press="onRowDelete" icon="sap-icon://decline"/>
+                        </t:items>
+                    </t:RowAction>
+                </t:rowActionTemplate>
+            </t:Table>
+        </content>
+    </Page>
+</mvc:View>

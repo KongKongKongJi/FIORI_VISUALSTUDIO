@@ -1,0 +1,324 @@
+<mvc:View controllerName="zcbcprojectinvcount.controller.Main"
+    xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+    xmlns="sap.m"
+    xmlns:u="sap.uxap"
+    xmlns:f="sap.f"
+    xmlns:layout="sap.ui.layout"
+    xmlns:form="sap.ui.layout.form"
+	xmlns:t="sap.ui.table">
+    <NavContainer id="wizardNavContainer">
+	<pages>
+			<Page
+				id="wizardContentPage"
+				showHeader="false">
+				<content>
+					<Wizard id="InvCount"
+							complete="completedHandler"
+							enableBranching="true"
+							class="sapUiResponsivePadding--header sapUiResponsivePadding--content">
+						<WizardStep
+								id="ContentsStep"
+								title="직영점 재고 실사"
+								nextStep="InvApproval"
+								icon="sap-icon://product">
+                                <Table id="productsTable"
+                                    sticky="ColumnHeaders,HeaderToolbar"
+                                    inset="false"
+                                    growing="true"
+                                    items="{
+                                            path: 'apply>/list',
+											sorter: {path : 'InvId'}
+                                        }"
+                                    width="auto">
+                                    <headerToolbar>
+                                        <OverflowToolbar>
+                                            <ToolbarSpacer/>
+                                            <SearchField search="onSearch" width="17.5rem" placeholder="SKU"/>
+                                        </OverflowToolbar>
+                                    </headerToolbar>
+                                    <columns>
+                                        <Column minScreenWidth="Desktop" demandPopin="true">
+                                            <Text text="SKU" />
+                                        </Column>
+                                        <Column minScreenWidth="Desktop" demandPopin="true">
+                                                <Text text="배치"/>
+                                            </Column>
+                                        <Column minScreenWidth="Desktop" demandPopin="true">
+                                            <Text text="재고수량" />
+                                        </Column>
+                                        <Column minScreenWidth="Desktop" demandPopin="true">
+                                            <Text text="실사수량" />
+                                        </Column>
+                                        <Column	minScreenWidth="Desktop" demandPopin="true">
+                                            <Text text="단위" />
+                                        </Column>
+                                    </columns>
+                                    <items>
+                                        <ColumnListItem id="oneStepList">
+                                            <cells>
+                                                <ObjectIdentifier title="{apply>InvId}" text="{apply>SkuName}" />
+                                                <ObjectIdentifier text="{apply>Batch}" />
+                                                 <ObjectIdentifier text="{apply>InvQty}" />
+												<StepInput id="stepnInput" min="0" width="100%" 
+												value="{apply>CntQty}" enabled="{apply>/editMode}"
+												 change="handleChange" valueState="{= ${apply>InvQty} === ${apply>CntQty} ? 'None' : 'Warning'}" valueStateText=""/>
+                                                 <ObjectIdentifier text="EA" />
+                                            </cells>
+                                        </ColumnListItem>
+                                    </items>
+                                </Table>
+						</WizardStep>
+						 <WizardStep
+								id="InvApproval"
+								title="재고 차이 내역 확인"
+								subsequentSteps="InvStep, ApplyStep"
+								complete="goToApplyStep"
+								activate="onActive"
+								icon="sap-icon://activity-2">
+							<Text class="sapUiSmallMarginBottom"
+							      text="시스템 수량과 실사 재고 간 차이 수량을 조정합니다."/>
+							<HBox
+									alignItems="Center"
+									justifyContent="Center"
+									width="100%">
+								<SegmentedButton selectionChange="setApplyMethod" id="ApplyMethodSelection" selectedKey="{/selectedApply}">
+									<items>
+										<SegmentedButtonItem key="Apply" icon="sap-icon://customer-order-entry" text="재고 조정건 있음" />
+										<SegmentedButtonItem key="Inv" icon="sap-icon://accept" text="재고 조정건 없음" />
+									</items>
+								</SegmentedButton>
+							</HBox>
+							<t:Table
+								id="INVCNT"
+								rows="{
+									path: 'Approval>/list',
+									sorter: {path : 'InvId'}
+								}"
+								selectionMode="None"
+								visibleRowCount="5"
+								paste="onPaste"
+								ariaLabelledBy="title">
+								<t:extension>
+									<OverflowToolbar style="Clear">
+										<Title id="title" text="재고 수량 조정 필요 제품"/>
+									</OverflowToolbar>
+								</t:extension>
+								<t:columns>
+									<t:Column width="15rem">
+										<Label text="SKU" />
+										<t:template>
+											<Text text="{Approval>InvId}" wrapping="false" />
+										</t:template>
+									</t:Column>
+									<t:Column width="8rem">
+										<Label text="배치" />
+										<t:template>
+											<Text text="{Approval>Batch}"/>
+										</t:template>
+									</t:Column>
+									<t:Column width="30rem" hAlign="End">
+										<Label text="SKU명" />
+										<t:template>
+											<Label text="{Approval>SkuName}" />
+										</t:template>
+									</t:Column>
+									<t:Column width="13rem">
+										<Label text="조정 필요 수량" />
+										<t:template>
+											<ObjectStatus text="{Approval>AdjustedQty}" state="{=${Approval>AdjustedQty} > 0 ? 'Warning' : 'Warning' }"/>
+										</t:template>
+									</t:Column>
+									<t:Column width="6rem">
+										<Label text="단위" />
+										<t:template>
+											<ObjectStatus text="{Approval>Unit}" />
+										</t:template>
+									</t:Column>
+								</t:columns>
+							</t:Table>
+						</WizardStep>
+						<WizardStep
+								id="InvStep"
+								title="재고 실사 내역 확인"
+								nextStep="FinishStep"
+								activate="checkInvStep"
+								icon="sap-icon://accounting-document-verification">
+							<MessageStrip
+							text="전산 재고와 실물 재고 수량이 일치합니다."
+							type="Success"
+							showIcon="true"
+							showCloseButton="true"
+							class="sapUiMediumMarginBottom">
+							</MessageStrip>
+								<Table id="exportTable" inset="false" 
+									   items="{
+                                            path: 'apply>/list',
+											sorter: {path : 'InvId'}
+                                        }" 
+										growing="true" growingThreshold="10"
+										width="auto">
+										<headerToolbar>
+											<OverflowToolbar>
+												<Title level="H3" text="직영점 창고 재고" />
+												<ToolbarSpacer />
+												<Button icon="sap-icon://excel-attachment" press="onExport"/>
+											</OverflowToolbar>
+										</headerToolbar>
+										<columns>
+											<Column>
+												<Text text="SKU" />
+											</Column>
+											<Column>
+												<Text text="배치" />
+											</Column>
+											<Column>
+												<Text text="SKU명" />
+											</Column>
+											<Column>
+												<Text text="재고 수량" />
+											</Column>
+											<Column hAlign="End">
+												<Text text="단위" />
+											</Column>
+										</columns>
+										<items>
+											<ColumnListItem>
+												<cells>
+													<Text text="{apply>InvId}" />
+													<Text text="{apply>Batch}" />
+													<Text text="{apply>SkuName}" />
+													<Text text="{apply>CntQty}" />
+													<Text text="EA" />
+												</cells>
+											</ColumnListItem>
+										</items>
+									</Table>
+						</WizardStep>
+						<WizardStep
+								id="ApplyStep"
+								title="재고 실사 기안 상신"
+								activate="checkApplyStep"
+								complete="handleMessage" 
+								nextStep="LastStep"
+								icon="sap-icon://customer-order-entry">
+							<VBox alignContent="Stretch" displayInline="true">
+							<t:Table
+								rows="{	path: 'EMPModel>/list'	}"
+								selectionMode="None"
+								visibleRowCount="3"
+								paste="onPaste"
+								ariaLabelledBy="title"
+								alternateRowColors="true">
+								<t:extension>
+									<OverflowToolbar style="Clear">
+										<Title id="EMP" text="결재선"/>
+									</OverflowToolbar>
+								</t:extension>
+								<t:columns>
+								<t:Column width="13rem">
+										<Label text="부서코드" />
+										<t:template>
+											<Text text="{EMPModel>emp}" wrapping="false" />
+										</t:template>
+									</t:Column>
+									<t:Column width="20rem">
+										<Label text="부서명" />
+										<t:template>
+											<Text text="{EMPModel>empName}" wrapping="false" />
+										</t:template>
+									</t:Column>
+									<t:Column width="20rem">
+										<Label text="직책" />
+										<t:template>
+											<Text text="{EMPModel>position}"/>
+										</t:template>
+									</t:Column>
+									<t:Column width="20rem" hAlign="End">
+										<Label text="이름" />
+										<t:template>
+											<Label text="{EMPModel>name}" />
+										</t:template>
+									</t:Column>
+								</t:columns>
+							</t:Table>
+							</VBox>
+							<t:Table
+								id="INVCNT2"
+								rows="{
+									path: 'Approval>/list',
+									sorter: {path : 'InvId'}
+								}"
+								visibleRowCount="{Approval>/listLen}"
+								selectionMode="None"
+								paste="onPaste"
+								ariaLabelledBy="title">
+								<t:extension>
+									<OverflowToolbar style="Clear">
+										<!-- <Title id="title" text="재고 수량 조정 필요 제품"/> -->
+									</OverflowToolbar>
+								</t:extension>
+								<t:columns>
+									<t:Column width="11rem">
+										<Label text="SKU" />
+										<t:template>
+											<Text text="{Approval>InvId}" wrapping="false" />
+										</t:template>
+									</t:Column>
+									<t:Column width="5rem">
+										<Label text="배치" />
+										<t:template>
+											<Text text="{Approval>Batch}"/>
+										</t:template>
+									</t:Column>
+									<t:Column width="15rem" hAlign="End">
+										<Label text="SKU명" />
+										<t:template>
+											<Label text="{Approval>SkuName}" />
+										</t:template>
+									</t:Column>
+									<t:Column width="8rem">
+										<Label text="조정 필요 수량" />
+										<t:template>
+											<ObjectStatus text="{Approval>AdjustedQty}" />
+										</t:template>
+									</t:Column>
+									<t:Column width="4rem">
+										<Label text="단위" />
+										<t:template>
+											<ObjectStatus text="{Approval>Unit}" />
+										</t:template>
+									</t:Column>
+									<t:Column>
+										<Label text="사유" required="true"/>
+										<t:template>
+											<Input value="{Approval>Reason}" liveChange="checkApplyStep" valueLiveUpdate="true" enabled="{Approval>/editMode}"/>
+										</t:template>
+									</t:Column>
+								</t:columns>
+							</t:Table>
+						</WizardStep>
+						<WizardStep
+								id="FinishStep"
+								title="재고 실사 완료"
+								icon="sap-icon://complete">
+						<Text text="재고 실사 처리 과정이 완료되었습니다."/>
+						</WizardStep>
+						<WizardStep
+								id="LastStep"
+								title="기안 상신 완료"
+								icon="sap-icon://complete"
+								activate="checkInputStep">
+						<Text text="기안서 상신이 완료되었습니다."/>
+						</WizardStep>
+					</Wizard>
+				</content>
+				<footer>
+					<OverflowToolbar>
+						<ToolbarSpacer/>
+						<!-- <Button text="Cancel" press="handleWizardCancel"/> -->
+					</OverflowToolbar>
+				</footer>
+			</Page>
+    </pages>
+</NavContainer>
+</mvc:View>

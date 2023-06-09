@@ -1,0 +1,10 @@
+<mvc:View controllerName="zprojectteste2503.controller.Main"
+    xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+    xmlns="sap.m">
+    <Page id="page" title="{i18n>title}">
+        <content>
+            <mvc:XMLView viewName="zprojectteste2503.view.HelloPanel" />
+        </content>
+    </Page>
+</mvc:View>
+

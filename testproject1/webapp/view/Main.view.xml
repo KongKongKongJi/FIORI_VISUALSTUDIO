@@ -1,0 +1,28 @@
+<mvc:View controllerName="testproject1.controller.Main"
+    xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+    xmlns="sap.m" xmlns:t="sap.ui.table"> 
+    <Page id="page" title="{i18n>title}">
+        <content>
+        <t:Table
+				rows="{/INVSet}"
+				selectionMode="MultiToggle"
+				visibleRowCount="7"
+				paste="onPaste"
+				ariaLabelledBy="title">
+				<t:extension>
+					<OverflowToolbar style="Clear">
+						<Title id="title" text="Products"/>
+					</OverflowToolbar>
+				</t:extension>
+				<t:columns>
+					<t:Column width="11rem">
+						<Label text="Product Name" />
+						<t:template>
+							<Text text="{InvId}" wrapping="false" />
+						</t:template>
+					</t:Column>
+				</t:columns>
+			</t:Table>
+        </content>
+    </Page>
+</mvc:View>

@@ -1,0 +1,45 @@
+<mvc:View controllerName="zprojectteste2508.controller.Main"
+    xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+    xmlns="sap.m"
+    xmlns:viz="sap.viz.ui5.controls"
+    xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds"
+    xmlns:viz.data="sap.viz.ui5.data">
+    <Page id="page" title="{i18n>title}">
+        <content>
+            <viz:Popover id="idViewPopover" />
+            <viz:VizFrame id="idViewChart" 
+                          vizType="stacked_bar" width="50%" height="50%"
+                          vizProperties="{
+                            'title' : { text : '시험점수', visible : true },
+                            'plotArea' : {
+                                drawingEffect:'glossy',
+                                colorPalette:['#BCE55C', '#476600']
+                            }
+                          }">
+                <viz:dataset>
+                    <viz.data:FlattenedDataset data="{view>/list}">
+                        <!-- x축 -->
+                        <viz.data:dimensions>
+                            <viz.data:DimensionDefinition name="과목" value="{view>name}" />
+                        </viz.data:dimensions>
+
+                        <!-- y축 -->
+                        <viz.data:measures>
+                            <viz.data:MeasureDefinition name="점수" value="{view>rate}" />
+                            <viz.data:MeasureDefinition name="점수2" value="{view>cost}" />
+                        </viz.data:measures>
+                    </viz.data:FlattenedDataset>
+                </viz:dataset>
+
+                <viz:feeds>
+                    <!-- categoryAxis, valueAxis / color, size -->
+                    <viz.feeds:FeedItem type="Dimension" uid="categoryAxis" values="과목"/>
+                    <viz.feeds:FeedItem type="Measure" uid="valueAxis" values="점수"/>
+                    <viz.feeds:FeedItem type="Measure" uid="valueAxis" values="점수2"/>
+                </viz:feeds>
+            </viz:VizFrame>
+
+            <viz:VizFrame id="idConChart" vizType="column" />
+        </content>
+    </Page>
+</mvc:View>
